@@ -111,11 +111,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\DDDDDDDDDDDDDDDDDDDDDDDD\\FCI\\GP\\D-Exam-with-Anti-Cheat-System-Backend\\Messaging\\Messaging.csproj",
+      "projectUniqueName": "C:\\DDDDDDDDDDDDDDDDDDDDDDDD\\FCI\\GP\\DExam-Microservices-Backend\\Messaging\\Messaging.csproj",
       "projectName": "Messaging",
-      "projectPath": "C:\\DDDDDDDDDDDDDDDDDDDDDDDD\\FCI\\GP\\D-Exam-with-Anti-Cheat-System-Backend\\Messaging\\Messaging.csproj",
+      "projectPath": "C:\\DDDDDDDDDDDDDDDDDDDDDDDD\\FCI\\GP\\DExam-Microservices-Backend\\Messaging\\Messaging.csproj",
       "packagesPath": "C:\\Users\\eyady\\.nuget\\packages\\",
-      "outputPath": "C:\\DDDDDDDDDDDDDDDDDDDDDDDD\\FCI\\GP\\D-Exam-with-Anti-Cheat-System-Backend\\Messaging\\obj\\",
+      "outputPath": "C:\\DDDDDDDDDDDDDDDDDDDDDDDD\\FCI\\GP\\DExam-Microservices-Backend\\Messaging\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\eyady\\AppData\\Roaming\\NuGet\\NuGet.Config",

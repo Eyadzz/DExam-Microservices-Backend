@@ -1,131 +1,104 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using API.Model;
-using Core.Entity;
-using Core.Interface.Service;
-using Core.Utility;
-using Messaging;
+﻿using Application.Features.Course.Commands.Create;
+using Application.Features.Course.Commands.Delete;
+using Application.Features.Course.Commands.Update;
+using Application.Features.Course.Queries.GetByCode;
+using Application.Features.Course.Queries.GetById;
+using Application.Features.Course.Queries.GetByTeacherId;
+using Application.Features.StudentCourses.Commands.CreateStudentCourses;
+using Application.Features.StudentCourses.Queries.GetStudentCourses;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [ApiController]
 [Route("/api/courses/")]
-[SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
 public class CourseController : ControllerBase
 {
-    private readonly ICourseService _courseService;
-    private readonly IStudCrsService _studCrsService;
+    private readonly IMediator _mediator;
 
-    public CourseController(ICourseService courseService, IStudCrsService studCrsService)
+    public CourseController(IMediator mediator)
     {
-        _courseService = courseService;
-        _studCrsService = studCrsService;
+        _mediator = mediator;
     }
 
     [HttpPost]
     [Route("create")]
-    public async Task<IActionResult> Create(CreateCourseRequest request)
+    public async Task<IActionResult> Create(CreateCourseCommand request)
     {
-        Course course = new Course
-        {
-            Name = request.Name,
-            TeacherId = request.TeacherId,
-            Code = CodeGenerator.Generate(),
-            StartDate = request.StartDate.ToString(),
-            EndDate = request.EndDate.ToString(),
-            CreatedAt = DateTime.Now.ToString(),
-            Students = new List<string>()
-        };
-        await _courseService.Create(course);
-        
-        return Ok(course);
+        var result = await _mediator.Send(request);
+        return Ok(result);
     }
 
     [HttpGet]
     [Route("get-by-id")]
     public async Task<IActionResult> GetById(string courseId)
     {
-        return Ok(await _courseService.GetById(courseId));
+        var result = await _mediator.Send(new GetCourseByIdRequest{CourseId = courseId});
+        return Ok(result);
     }
-    
-    [HttpGet]
-    [Route("get-by-name")]
-    public async Task<IActionResult> GetByName(string name)
-    {
-        return Ok(await _courseService.GetByName(name));
-    }
-    
+
     [HttpGet]
     [Route("get-by-code")]
     public async Task<IActionResult> GetByCode(string code)
     {
-        return Ok(await _courseService.GetByCode(code));
+        var result = await _mediator.Send(new GetCourseByCodeRequest{CourseCode = code});
+        return Ok(result);
     }
     
     [HttpGet]
     [Route("get-by-teacher")]
     public async Task<IActionResult> GetByTeacher(string id)
     {
-        return Ok(await _courseService.GetByTeacher(id));
+        var result = await _mediator.Send(new GetCourseByTeacherRequest(){TeacherId = id});
+        return Ok(result);
     }
     
     [HttpPatch]
     [Route("update")]
-    public async Task<IActionResult> Update(UpdateCourseRequest request)
+    public async Task<IActionResult> Update(UpdateCourseCommand request)
     {
-        return Ok(await _courseService.Update(request.CourseId, request.NewCourseName));
+        var result = await _mediator.Send(request);
+        return Ok(result);
     }
     
     [HttpDelete]
     [Route("delete")]
-    public async Task<IActionResult> Delete(string courseId)
+    public async Task<IActionResult> Delete(string? courseId)
     {
-        _courseService.Delete(courseId);
-        await _studCrsService.RemoveStudentsFromSpecificCourse(courseId);
-        RabbitMq.Send(courseId);
-        return Ok("Success");
+        var result = await _mediator.Send(new DeleteCourseCommand {CourseId = courseId});
+        return Ok(result);
     }
 
     [HttpPost]
     [Route("register-student")]
-    public async Task<IActionResult> RegisterStudent(RegisterStudentRequest request)
+    public async Task<IActionResult> RegisterStudent(RegisterStudentCommand request)
     {
-        var course = await _courseService.GetByCode(request.CourseCode);
-        await _studCrsService.AddStudentToCourse(request.StudentId, course.CourseId.ToString());
-        await _courseService.RegisterStudent(request.StudentId, course.CourseId.ToString());
-        return Ok("Success");
+        var result = await _mediator.Send(request);
+        return Ok(result);
     }
     
     [HttpDelete]
     [Route("remove-student")]
-    public async Task<IActionResult> RemoveStudent(RemoveStudentRequest request)
+    public async Task<IActionResult> RemoveStudent(RegisterStudentCommand request)
     {
-        await _studCrsService.RemoveStudentFromCourse(request.StudentId, request.CourseId);
-        await _courseService.RemoveStudent(request.StudentId, request.CourseId);
-        return Ok("Success");
+        var result = await _mediator.Send(request);
+        return Ok(result);
     }
     
     [HttpGet]
     [Route("get-student-courses")]
     public async Task<IActionResult> GetStudentCourses(string studentId)
     {
-        var sc = await _studCrsService.GetStudentCourses(studentId);
-        List<Course> courses = new List<Course>();
-        
-        foreach (var courseId in sc)
-        {
-            var course = await _courseService.GetById(courseId);
-            courses.Add(course);
-        }
-
-        return Ok(courses);
+        var result = await _mediator.Send(new GetStudentCoursesRequest() {StudentId = studentId});
+        return Ok(result);
     }
     
     [HttpPost]
     [Route("create-student-courses")]
-    public IActionResult CreateStudentCourses(string studentId)
+    public async Task<IActionResult> CreateStudentCourses(string studentId)
     {
-        _studCrsService.CreateStudentCourses(studentId);
-        return Ok("Success");
+        var result = await _mediator.Send(new CreateStudentCoursesRequest() {StudentId = studentId});
+        return Ok(result);
     }
 }
