@@ -9,7 +9,7 @@
 ---
 ## Summary
 
-This Repository is dedicated for the backend part of the application. This application is designed for our D-Exam Application. It aims to have an examintion system with a reliable anti-cheat system for both students and teachers to use.
+This Repository is dedicated for the backend part of the application (Refer to the - [Documentation](https://github.com/MarwanGalal746/D-Exam-with-Anti-Cheat-System) for more details and features). This application is designed for our D-Exam Application. It aims to have an examintion system with a reliable anti-cheat system for both students and teachers to use.
 
 ## System Architecture
 
